@@ -25,17 +25,19 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-core.min.js"></script>
-	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-scatter.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-treemap.min.js"></script>
 	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-heatmap.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-cartesian.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-pyramid-funnel.min.js"></script>
 	<script src="{{url_for('static', filename='js/monitor.js')}}" type="text/javascript"></script>
 	</head>
 	<body>
     {% extends "template.html" %}
 	{% block content %}
-          <div class="content-wrapper">
+        <div class="content-wrapper">
             <div class="page-header">
-              <h3 class="page-title"> index </h3>
-              </nav>
+                <h3 class="page-title"> index </h3>
+                </nav>
             </div>
 			<div class="page-header">
               <h3 class="page-title"> Dashboard </h3>
@@ -49,7 +51,7 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
-                      <div class="col-9">
+                        <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0">
 							<div id="show_time0" style="">
@@ -58,9 +60,9 @@
 							</script>
 							</h3>
 							</div>
-                      </div>
-                    </div>
-                  </div>
+                        </div>
+						</div>
+					</div>
                 </div>
               </div>
 			  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
@@ -69,15 +71,15 @@
                     <div class="row">
                      <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">Model Select</h3>
+                          <h3 class="mb-0">Page Select</h3>
                         </div>
                       </div>
-						<select name="time" id="timeinterval">
+						<select name="page" id="pageselect">
 							<option value="" disabled selected>Select the page</option>
-							<option value="Project">Project</option>
-							<option value="Train">Train</option>
-							<option value="Label">Label</option>
-							<option value="Verification">Verification</option>
+							<option value=" Owner：PrjManagerForm">Project</option>
+							<option value=" Owner：TrainerForm">Train</option>
+							<option value=" Owner：VerifierForm">Verification</option>
+							<option value=" Owner：PredictorForm">Predictor</option>
 						</select>
 						<p class="text-success ml-2 mb-0 font-weight-medium"><button id='testBTN' class="button-two" type="text"><span>submit</span></button></p>
 						
@@ -112,16 +114,11 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$12.34</h3>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</h3>
+                          <h3 class="mb-0" id="this_page_count">-</h3>
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Daily Income</h6>
+                    <h6 class="text-muted font-weight-normal">Page Number</h6>
                   </div>
                 </div>
               </div>
@@ -131,7 +128,7 @@
               <div class="col-sm-6 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h2>Heatmap</h2>
+                    <h2>Complete Process Funnel Plot</h2>
                     <div class="row">
 					<div id="container_chart1" style="height=660px"></div>
                     </div>
@@ -141,7 +138,7 @@
                <div class="col-sm-6 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h2>Customer Location</h2>
+                    <h2>Next Page Bar Chart</h2>
                     <div class="row">
 					<div id="container_chart2" style="height=660px"></div>
                     </div>
@@ -192,34 +189,29 @@
                   </div>
                 </div>
               </div>
+			</div>
         <!-- content-wrapper ends -->
-		
+			
 		<!-- AJAX setting -->
 		<script type=text/javascript>
 			$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
 		</script>	
 		<script language="javascript" type="text/javascript">
 		setInterval(function(){
-		$.ajax({
-			type: "POST",
-			url: $SCRIPT_ROOT + "/page_count",
-			success: (data) => {
-				$("#page_count").text(data.db_size);
-				}
-			},
-			contentType: false,
-			processData: false,
-			dataType: "json"
-			});
+			$.ajax({
+				type: "POST",
+				url: $SCRIPT_ROOT + "/page_count",
+				success: (data) => {
+					$("#page_count").text(data.db_size);
+				},
+				contentType: false,
+				processData: false,
+				dataType: "json"
+				});
 		}, 1000);
 		</script>
-        <!-- partial:partials/_footer.html -->
         {% endblock %}
-        <!-- partial -->
-        
-        <!-- main-panel ends -->
-    <!-- page-body-wrapper ends -->
-    </div>
+		
     <!-- container-scroller -->
     <!-- plugins:js -->
 	<script src="{{url_for('static',filename='assets/vendors/js/vendor.bundle.base.js')}}"></script>

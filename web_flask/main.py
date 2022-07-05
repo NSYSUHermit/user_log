@@ -68,32 +68,25 @@ def log_submit():
 @app.route("/page_count", methods=['GET','POST'])
 def page_count():
     db_size = Nosql().get_db_size()
+    print(db_size)
     return jsonify({'db_size':db_size}) 
 
 @app.route("/page_plot", methods=['GET','POST'])
 def page_plot():
-    time = request.form.get('time') 
-    p1, p2, p3, p4 = [0, 400], [500, 600] ,[400, 200], [100, 100] # bl, br, tr, tl
-    map_df = spd.cal_hmap(int(time), db.get_actions(int(time)), p1, p2, p3, p4)
-    map_df.columns = ["x", "y", "heat"]
-    map_df = map_df.to_json(orient = "records")
-    location_df1 = spd.cal_location(db.get_location(int(time)), p1, p2, p3, p4)
-    location_df1 = location_df1.sort_values(by = 'date_time', ascending=False)
-    location_df = location_df1.to_json(orient = "records")
-    id_list = location_df1["id"].to_json(orient="records")
-    bhv_list = location_df1["bhv"].to_json(orient="records")
-    pdt_list = location_df1["pdt"].to_json(orient="records")
-    time_list = location_df1["date_time"].to_json(orient="records")
-    name_list, score_list = db.get_products_count(int(time))
-    name_list = name_list.to_json(orient = "records")
-    score_list = score_list.to_json(orient = "records")
-    print("bhv_list:",bhv_list)
-    print("name_list:",name_list)
-    print("score_list:",score_list)
-    return jsonify({'time':time, 'location_df':location_df, 'map_df':map_df, 'id_list':id_list, 'bhv_list':bhv_list, 'pdt_list':pdt_list, 'time_list':time_list, 'name_list':name_list, 'score_list':score_list})
-
-
+    page = request.form.get('page')
+    print("select page: ",page)
+    query = {"$and": [{'Owner': page}, {"next_page": {'$exists': True}}, {"prev_page": {'$exists': True}}]}
+    list = Nosql().query_db(query)
+    df = pd.DataFrame(list)
+    name_list = df.groupby(['prev_page']).count()['_id'].index
+    num_list = df.groupby(['prev_page']).count()['_id'].values
+    funnel_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
+    page_count = sum(funnel_data['value'])
+    print(page_count)
+    funnel_data = funnel_data.to_json(orient = "records")
     
+    return jsonify({'funnel_data':funnel_data,'page_count':page_count})
+   
 @app.route('/monitor_facelist', methods=["GET",'POST'])
 def monitor_facelist():
     df = db.get_faceid()
