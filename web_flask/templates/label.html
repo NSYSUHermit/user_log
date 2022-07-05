@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Crowd Control</title>
+	<link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+    <!-- plugins:css -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}" />
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/jvectormap/jquery-jvectormap.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}" />
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.min.css') }}" />	
+  </head>
+  <body>
+    {% extends "template.html" %}
+	{% block content %}
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script>
+		$(function(){
+		$("#datepicker").datepicker({dateFormat:"yy/mm/dd"});
+		});
+	</script>
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title"> index </h3>
+              </nav>
+            </div>
+			<div class="page-header">
+              <h2 class="page-title"> Label Tool </h2>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                </ol>
+              </nav>
+            </div>
+			
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h2 class="card-title"> Label Samples </h2>
+                    <p class="card-description"> Choose a day to label </p>
+						<form method="post">
+							<p>Date: <input name="date" type="text" id="datepicker">  
+								<button class="button-two" type="submit" name="date_send" value="Submit"><span>submit</span></button>
+							</p>
+						</form>
+						<!-- photos -->
+						<div class="card1" style="height: 460px;  padding: 10px 10px;">
+							<h2>{{date}}</h2>
+							<!-- Container for the image gallery -->
+							{% if date != "" %}
+							<div class="image_container">
+								<!-- Full-width images with number text -->
+								{% for image_index in imgs_url %}
+								<div class="mySlides">
+									<img src="{{image_index}}" style="height:300px">
+								</div>
+								{% endfor %}
+								<!-- Next and previous buttons -->
+								<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+								<a class="next" onclick="plusSlides(1)">&#10095;</a>
+								<!-- Thumbnail images -->
+								<div class="image_row">
+								{% for image_index in imgs_url %}
+								<div class="column">
+									<img class="demo cursor" src="{{image_index}}" style="height:100px" onclick="currentSlide({{loop.index}})" alt="{{loop.index}}">
+								</div>
+								{% endfor %}
+								</div>
+							</div> 
+							{% endif %}
+						</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h2 class="card-title">Label items</h2>
+                    <p class="card-description"> Click the item to left samples </p>
+					<!-- label list -->
+					<!-- Image text -->
+					<div class="caption-container">
+						<p id="caption"></p>
+					<center>
+					</div>
+					<div class="form-group">
+						<table  id="itemtable" class="example">
+							{% for row in data %}
+							<tr>
+								<td><center><a value={{row[0]}}></a>{{row[0]}}</center></td> 	                       
+							</tr> 
+							{% endfor %}
+						</table>
+					</div>
+                  </div>
+                </div>
+              </div>
+			</div>
+			
+	<!-- scripts -->
+	<script src="{{url_for('static',filename='js/jquery.jdSlider-latest.min.js')}}"></script>
+	
+	<!-- AJAX setting -->
+	<script type=text/javascript>
+	  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	</script>
+	<script language="javascript" type="text/javascript">
+	$('#itemtable td').click(function() {
+	var form_data = new FormData();
+	form_data.append('item', $(this).find("a").attr("value"));
+	form_data.append('num', $("#caption").text());
+	
+	$.ajax({
+		  type: "POST",
+		  url: $SCRIPT_ROOT + "/label_submit",
+		  data: form_data,
+		  success: (data) => {
+			console.log(data.validate);
+			alert(data.item)
+		  },
+		  contentType: false,
+		  processData: false,
+		  dataType: "json"
+		});
+	});
+	</script>
+	{% endblock %}
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+	<script src="{{url_for('static',filename='assets/vendors/js/vendor.bundle.base.js')}}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+	<script src="{{url_for('static',filename='assets/vendors/chart.js/Chart.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/progressbar.js/progressbar.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/owl-carousel-2/owl.carousel.min.js')}}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->	
+	<script src="{{url_for('static',filename='assets/js/off-canvas.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/hoverable-collapse.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/misc.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/settings.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/todolist.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+	<script src="{{url_for('static',filename='assets/js/dashboard.js')}}"></script>
+    <!-- End custom js for this page -->
+  </body>
+</html>

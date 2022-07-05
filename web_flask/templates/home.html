@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>User Flow</title>
+	<link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+    <!-- plugins:css -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}" />
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/jvectormap/jquery-jvectormap.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}" />
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}" />
+	</head>
+	<body>
+    {% extends "template.html" %}
+	{% block content %}
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title"> index </h3>
+                </nav>
+            </div>
+			
+			<div class="page-header">
+                <h2 class="page-title"> Home </h2>
+                <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                </ol>
+                </nav>
+            </div>
+			
+		<div class="row">
+			<div class="col-md-12 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+					<h2 class="card-title"> User Flow </h2>
+					<p class="card-description"> ANALYSIS & VISUALIZATION </p>
+						<center>
+						<img id ="2XSHZ" width="40%" src="https://y26uq11r8xr1zyp0d3inciqv-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/35-1.jpg">
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+					
+					<h2>Upload new File</h2>
+					
+					<div class="form-group">
+					    <label for="folder_path">Key in the ais log files folder path.:</label>
+					    <input type="text" class="form-control" id="folder_path" >
+					</div>
+					
+					<button id='upload_btn' type='button'>Upload</button>    
+					
+					<h3>The amount of data in database:</h3>
+					<h3 id="db_size">-</h3>
+					
+					</div>
+				</div>
+			</div>
+		</div>	
+
+ 		
+
+		<!-- AJAX setting -->
+		<script type=text/javascript>
+			$SCRIPT_ROOT = {{ request.script_root|tojson|safe }}; 
+		</script>
+		<script language="javascript" type="text/javascript">
+		$('#upload_btn').click(function(){
+		var form_data = new FormData();
+		form_data.append('folder_path', $("#folder_path").val());
+		$.ajax({
+			type: "POST",
+			url: $SCRIPT_ROOT + "/log_submit",
+			data: form_data,
+			success: (data) => {
+			$("#db_size").text(data.db_size);
+
+			alert(data.msg)
+			},
+			contentType: false,
+			processData: false,
+			dataType: "json"
+			});
+		});
+		</script>
+		<!-- content-wrapper ends -->
+		<!-- partial:../../partials/_footer.html -->          
+		{% endblock %}
+		
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+	<script src="{{url_for('static',filename='assets/vendors/js/vendor.bundle.base.js')}}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+	<script src="{{url_for('static',filename='assets/vendors/chart.js/Chart.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/progressbar.js/progressbar.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/owl-carousel-2/owl.carousel.min.js')}}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->	
+	<script src="{{url_for('static',filename='assets/js/off-canvas.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/hoverable-collapse.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/misc.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/settings.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/todolist.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+	<script src="{{url_for('static',filename='assets/js/dashboard.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <!-- End custom js for this page -->
+	</body>
+</html>

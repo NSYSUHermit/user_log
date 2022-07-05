@@ -1,0 +1,25 @@
+container_new {
+	width: 130px;
+	height: 60px;
+	display: table;
+	background-color: #ccc;
+}
+
+image-container {
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+}
+.card_new{
+  /* 設定父親定位點 */
+  position: relative;
+  width: 150px;
+  float:left;
+  margin: 10px;
+}
+/* img { */
+	/* position: relative; */
+	/* display: block; */
+	/* max-width: 200px; */
+	/* max-height: 200px;         */
+/* } */

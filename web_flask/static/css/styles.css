@@ -1,0 +1,7 @@
+div#scroller {
+    border: 2px solid black;
+}
+div.item {
+    border-bottom: 1px solid #333;
+    height: 50px;
+}
