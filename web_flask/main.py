@@ -78,14 +78,22 @@ def page_plot():
     query = {"$and": [{'Owner': page}, {"next_page": {'$exists': True}}, {"prev_page": {'$exists': True}}]}
     list = Nosql().query_db(query)
     df = pd.DataFrame(list)
+    
+    # prev
     name_list = df.groupby(['prev_page']).count()['_id'].index
     num_list = df.groupby(['prev_page']).count()['_id'].values
-    funnel_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
-    page_count = sum(funnel_data['value'])
+    prev_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
+    page_count = sum(prev_data['value'])
+    prev_data = prev_data.to_json(orient = "records")
     print(page_count)
-    funnel_data = funnel_data.to_json(orient = "records")
     
-    return jsonify({'funnel_data':funnel_data,'page_count':page_count})
+    # next
+    name_list = df.groupby(['next_page']).count()['_id'].index
+    num_list = df.groupby(['next_page']).count()['_id'].values
+    next_data = pd.DataFrame({'x': name_list, 'value': num_list, 'fill': "#FF0000"}, columns=['x', 'value', 'fill'])
+    next_data = next_data.to_json(orient = "records")  
+    
+    return jsonify({'next_data':next_data, 'prev_data':prev_data, 'page_count':page_count})
    
 @app.route('/monitor_facelist', methods=["GET",'POST'])
 def monitor_facelist():

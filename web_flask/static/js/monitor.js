@@ -1,43 +1,11 @@
-// heatmap
 anychart.onDocumentReady(function () {
 	var data_1 = [];
 	dataSet1 = anychart.data.set(data_1);
 	// map the data
 	var mapping = dataSet1.mapAs({x: 0, value: 1});
-
 	// create a chart
 	var chart = anychart.funnel(mapping);
 
-	// go through all points of the end to the beginning
-	for (var i = chart.getStat("count") - 1;i > 0; i--){
-		// get the point and the point before it
-		currentPoint = chart.getPoint(i);
-		previousPoint = chart.getPoint(i - 1);
-
-		// calculate the difference of values
-		diff = currentPoint.get("value") - previousPoint.get("value");
-
-		// and put it into the data
-		currentPoint.set("diff", diff);
-
-		// color the columns depending on the difference
-		if (diff > 0) {
-			currentPoint.set("fill", "#31C45D");
-			currentPoint.set("stroke", {color: anychart.color.darken("#31C45D", 0.05)});
-		} else
-		{
-			currentPoint.set("fill", "#F39232");
-			currentPoint.set("stroke", {color: anychart.color.darken("#F39232", 0.05)});
-		}
-	}
-
-	// display the diff in tooltip
-	// the diff wasn't in the original dataset, but we've added it
-	var tooltip = chart.tooltip();
-	tooltip.format("Change: {%diff}");
-
-    chart.neckHeight(0);
-	
     // set the container id
     chart.container("container_chart1");
     // initiate drawing the chart
@@ -62,6 +30,26 @@ anychart.onDocumentReady(function() {
     chart.draw();
 });
 
+anychart.onDocumentReady(function() {
+	var data_3 = [];
+	
+	dataSet3 = anychart.data.set(data_3);
+	// map the data
+	var mapping = dataSet3.mapAs({x: 0, value: 1});
+
+	// create a chart
+	var chart = anychart.column();
+
+	// create a series and set the data
+	var series = chart.column(mapping);
+	
+    // set the container id
+    chart.container("container_chart3");
+
+    // initiate drawing the chart
+    chart.draw();
+});
+
 //update table
 function testBTN(){
 	$('#testBTN').click(function() {
@@ -72,7 +60,9 @@ function testBTN(){
 			url: $SCRIPT_ROOT + "/page_plot",
 			data: form_data,
 			success: (data) => {
-				var funnel_data = JSON.parse(data.funnel_data)
+				var next_data = JSON.parse(data.next_data)
+				next_data["fill"] = "#FF0000"
+				var prev_data = JSON.parse(data.prev_data)
 				test_data = [
 					["Projector", 2320],
 					["Labeller", 944],
@@ -80,7 +70,8 @@ function testBTN(){
 					["Predictor", 221]
 				];
 				dataSet1.data(test_data)
-				dataSet2.data(funnel_data)
+				dataSet2.data(next_data)
+				dataSet3.data(prev_data)
 				$("#this_page_count").text(data.page_count);
 			},
 			contentType: false,
