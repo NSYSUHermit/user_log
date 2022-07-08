@@ -26,6 +26,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-core.min.js"></script>
 	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-cartesian.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-pie.min.js"></script>
 	<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-pyramid-funnel.min.js"></script>
 	<script src="{{url_for('static', filename='js/monitor.js')}}" type="text/javascript"></script>
 	</head>
@@ -44,7 +45,7 @@
                 </ol>
               </nav>
             </div>
-			
+			<!-- info submit row -->
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
@@ -64,6 +65,7 @@
 					</div>
                 </div>
               </div>
+			  
 			  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -80,9 +82,8 @@
 							<option value=" Owner：VerifierForm">Verification</option>
 							<option value=" Owner：PredictorForm">Predictor</option>
 						</select>
-						<p class="text-success ml-2 mb-0 font-weight-medium"><button id='testBTN' class="button-two" type="text"><span>submit</span></button></p>
-						
-						<script>testBTN()</script>
+						<p class="text-success ml-2 mb-0 font-weight-medium"><button id='chart_btn' class="button-two" type="text"><span>submit</span></button></p>
+						<script>chart_btn()</script>
                     </div>
                   </div>
                 </div>
@@ -122,14 +123,14 @@
                 </div>
               </div>
             </div>
-
+			<!-- page chart -->
             <div class="row">
                <div class="col-sm-6 grid-margin">
                 <div class="card">
                   <div class="card-body">
                     <h2>Prev Page Bar Chart</h2>
                     <div class="row">
-					<div class="container" id="container_chart3" style="height=660px"></div>
+					<div class="container" id="container_chart_prev" style="height=660px"></div>
                     </div>
                   </div>
                 </div>
@@ -139,69 +140,35 @@
                   <div class="card-body">
                     <h2>Next Page Bar Chart</h2>
                     <div class="row">
-					<div class="container" id="container_chart2" style="height=660px"></div>
+					<div class="container" id="container_chart_next" style="height=660px"></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
+			<!-- pie chart -->
             <div class="row">
               <div class="col-sm-6 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h2>Complete Process Funnel Plot</h2>
+                    <h2>Complete Processing Funnel Chart</h2>
                     <div class="row">
-					<div class="container" id="container_chart1" style="height=660px"></div>
+					<div class="container" id="container_chart_funnel" style="height=660px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+			  <div class="col-sm-6 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <h2>Components Pie Chart</h2>
+                    <div class="row">
+					<div class="container" id="container_pie_components" style="height=660px"></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-			
-            <div class="row">
-              <div class="col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h2 class="card-title">In store</h2>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="table-responsive">
-                          <table class="table" id="store_table">
-                            <tbody>
-                              <tr class="table-info" style="color:white;">
-                                <td> ID </td>
-                                <td> Behavior </td>
-                                <td> Product </td>
-								<td> Time </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-					  <h2 class="card-title"> </h2>
-                    </div>
-				  
-                    <h2 class="card-title">Customer Likes</h2>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="table-responsive">
-                          <table class="table" id="product_table">
-                            <tbody>
-                              <tr class="table-info" style="color:white;">
-                                <td> Rank </td>
-                                <td> Product </td>
-                                <td> Score </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-			</div>
         <!-- content-wrapper ends -->
 			
 		<!-- AJAX setting -->

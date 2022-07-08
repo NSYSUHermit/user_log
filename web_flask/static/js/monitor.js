@@ -1,58 +1,48 @@
+// PREV CHART
+anychart.onDocumentReady(function() {
+	var data_prev = [];
+	dataSet_prev = anychart.data.set(data_prev);
+	var mapping = dataSet_prev.mapAs({x: 0, value: 1});
+	var chart = anychart.column();
+	var series = chart.column(mapping);
+    chart.container("container_chart_prev");
+    chart.draw();
+});
+
+// NEXT CHART
+anychart.onDocumentReady(function() {
+	var data_next = [];
+	dataSet_next = anychart.data.set(data_next);
+	var mapping = dataSet_next.mapAs({x: 0, value: 1});
+	var chart = anychart.column();
+	var series = chart.column(mapping);
+    chart.container("container_chart_next");
+    chart.draw();
+});
+
+// Funnel chart
 anychart.onDocumentReady(function () {
-	var data_1 = [];
-	dataSet1 = anychart.data.set(data_1);
-	// map the data
-	var mapping = dataSet1.mapAs({x: 0, value: 1});
-	// create a chart
+	var data_funnel = [];
+	dataSet_funnel = anychart.data.set(data_funnel);
+	var mapping = dataSet_funnel.mapAs({x: 0, value: 1});
 	var chart = anychart.funnel(mapping);
-
-    // set the container id
-    chart.container("container_chart1");
-    // initiate drawing the chart
+    chart.container("container_chart_funnel");
     chart.draw();
 });
 
-anychart.onDocumentReady(function() {
-	var data_2 = [];
-	dataSet2 = anychart.data.set(data_2);
-	// map the data
-	var mapping = dataSet2.mapAs({x: 0, value: 1});
-
-	// create a chart
-	var chart = anychart.column();
-
-	// create a series and set the data
-	var series = chart.column(mapping);
-			
-    // set the container id
-    chart.container("container_chart2");
-    // initiate drawing the chart
-    chart.draw();
-});
-
-anychart.onDocumentReady(function() {
-	var data_3 = [];
-	
-	dataSet3 = anychart.data.set(data_3);
-	// map the data
-	var mapping = dataSet3.mapAs({x: 0, value: 1});
-
-	// create a chart
-	var chart = anychart.column();
-
-	// create a series and set the data
-	var series = chart.column(mapping);
-	
-    // set the container id
-    chart.container("container_chart3");
-
-    // initiate drawing the chart
-    chart.draw();
+// Components Tree chart
+anychart.onDocumentReady(function () {
+	var data_component = [];
+	dataSet_component = anychart.data.set(data_component);
+	var mapping = dataSet_component.mapAs({x: 0, value: 1});
+	var chart = anychart.pie(mapping);
+	chart.container("container_pie_components");
+	chart.draw();
 });
 
 //update table
-function testBTN(){
-	$('#testBTN').click(function() {
+function chart_btn(){
+	$('#chart_btn').click(function() {
 	var form_data = new FormData();
 	form_data.append('page', $("#pageselect").val());
 	$.ajax({
@@ -61,17 +51,20 @@ function testBTN(){
 			data: form_data,
 			success: (data) => {
 				var next_data = JSON.parse(data.next_data)
-				next_data["fill"] = "#FF0000"
 				var prev_data = JSON.parse(data.prev_data)
+				var components_data = JSON.parse(data.components_data)
+
 				test_data = [
 					["Projector", 2320],
 					["Labeller", 944],
 					["Verifier", 473],
 					["Predictor", 221]
 				];
-				dataSet1.data(test_data)
-				dataSet2.data(next_data)
-				dataSet3.data(prev_data)
+
+				dataSet_funnel.data(test_data)
+				dataSet_component.data(components_data)
+				dataSet_prev.data(prev_data)
+				dataSet_next.data(next_data)
 				$("#this_page_count").text(data.page_count);
 			},
 			contentType: false,

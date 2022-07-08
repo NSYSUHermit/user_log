@@ -92,8 +92,14 @@ def page_plot():
     num_list = df.groupby(['next_page']).count()['_id'].values
     next_data = pd.DataFrame({'x': name_list, 'value': num_list, 'fill': "#FF0000"}, columns=['x', 'value', 'fill'])
     next_data = next_data.to_json(orient = "records")  
+
+    # components
+    name_list = df.groupby(['Name']).count()['_id'].index
+    num_list = df.groupby(['Name']).count()['_id'].values
+    components_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
+    components_data = components_data.to_json(orient = "records")  
     
-    return jsonify({'next_data':next_data, 'prev_data':prev_data, 'page_count':page_count})
+    return jsonify({'next_data':next_data, 'prev_data':prev_data, 'components_data':components_data, 'page_count':page_count})
    
 @app.route('/monitor_facelist', methods=["GET",'POST'])
 def monitor_facelist():
