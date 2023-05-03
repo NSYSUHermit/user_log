@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 	<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>User Flow</title>
-	<link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}">
+	<link rel="shortcut icon" href="{{url_for('static', filename='favicon_index.ico')}}">
     <!-- plugins:css -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}" />
@@ -24,57 +24,41 @@
 	<body>
     {% extends "template.html" %}
 	{% block content %}
-        <div class="content-wrapper">
-            <div class="page-header">
-                <h3 class="page-title"> index </h3>
-                </nav>
-            </div>
-			
-			<div class="page-header">
-                <h2 class="page-title"> Home </h2>
-                <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                </ol>
-                </nav>
-            </div>
-			
+    <div class="content-wrapper">
+		<div class="page-header">
+			<h3 class="page-title"> Basic Tables </h3>
+			<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="#">Tables</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Basic tables</li>
+			</ol>
+			</nav>
+		</div>
 		<div class="row">
 			<div class="col-md-12 grid-margin stretch-card">
 				<div class="card">
 					<div class="card-body">
-					<h2 class="card-title"> User Flow </h2>
+					<h2 class="card-title"> User Log Analysis Tool 📊 </h2>
 					<p class="card-description"> ANALYSIS & VISUALIZATION </p>
-						<center>
-						<img id ="2XSHZ" width="40%" src="https://y26uq11r8xr1zyp0d3inciqv-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/35-1.jpg">
-						</center>
+					</div>
+
+					<div class="card-body">
+					<h2 style="text-align: center;">Upload AISVISION user log files from your disk.</h2>
+					<div class="form-group">
+					    <p class="card-description">Enter the path of the log files folder:</p>
+					    <input type="text" class="form-control" id="folder_path" style="color:white">
+					</div>
+					<center> <button id='upload_btn' type='button'>Data Upload</button> </center>
+					<div class="form-group"></div>
+					<h3>The amount of uploading records:</h3>
+					<h3 id="upload_size">-</h3>
+					<div class="form-group"></div>
+					<h3>The amount of records in database:</h3>
+					<h3 id="db_size">-</h3>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<div class="row">
-			<div class="col-md-12 grid-margin stretch-card">
-				<div class="card">
-					<div class="card-body">
-					
-					<h2>Upload new File</h2>
-					
-					<div class="form-group">
-					    <p class="card-description">Key in the ais log files folder path:</p>
-					    <input type="text" class="form-control" id="folder_path" style="color:white">
-					</div>
-					
-					<button id='upload_btn' type='button'>Upload</button>    
-					
-					<div class="form-group"></div>
-					
-					<h3>The amount of data in database:</h3>
-					<h3 id="db_size">-</h3>
-					
-					</div>
-				</div>
-			</div>
-		</div>	
 
 		<!-- AJAX setting -->
 		<script type=text/javascript>
@@ -89,6 +73,7 @@
 			url: $SCRIPT_ROOT + "/log_submit",
 			data: form_data,
 			success: (data) => {
+			$("#upload_size").text(data.upload_size);
 			$("#db_size").text(data.db_size);
 			alert(data.msg)
 			},
@@ -99,8 +84,8 @@
 		});
 		</script>
 		<!-- content-wrapper ends -->
-		<!-- partial:../../partials/_footer.html -->          
-		{% endblock %}
+		<!-- partial:../../partials/_footer.html -->
+	{% endblock %}
 		
     <!-- container-scroller -->
     <!-- plugins:js -->
@@ -124,5 +109,6 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <!-- End custom js for this page -->
+	</div>
 	</body>
 </html>

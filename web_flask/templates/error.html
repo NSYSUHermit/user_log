@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>User Flow</title>
+	<link rel="shortcut icon" href="{{url_for('static', filename='favicon_index.ico')}}">
+    <!-- plugins:css -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}" />
+    <!-- endinject -->
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/extra/vanilla-datetimerange-picker-dark.css">
+    <!-- Plugin css for this page -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/jvectormap/jquery-jvectormap.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}" />
+    <script src="{{url_for('static', filename='js/error.js')}}" type="text/javascript"></script>
+	</head>
+    <body>
+    {% extends "template.html" %}
+	{% block content %}
+    <div class="content-wrapper">
+
+    <div class="page-header">
+        <h3 class="page-title"> Basic Tables </h3>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Tables</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
+          </ol>
+        </nav>
+      </div>
+
+    <!-- info submit row -->
+    <div class="row">
+      <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-9">
+                <div class="d-flex align-items-center align-self-start">
+                  <h3 class="mb-0">
+                    <div id="show_time0" style=""></div>
+                    <script>
+                     setInterval("show_time0.innerHTML=new Date().toLocaleString()+' 星期'+'日一二三四五六'.charAt(new Date().getDay());",1000);
+                    </script>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+                <div class="col-9">
+                  <div class="d-flex align-items-center align-self-start">
+                  <h3 class="mb-0">Date Select</h3>
+                  </div>
+                </div>
+                <div><input type="text" id="datetimerange-input1" size="40" style="text-align:center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-9">
+                <div class="d-flex align-items-center align-self-start">
+                  <h3 class="mb-0" id="error_total">-</h3>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="d-flex align-items-center align-self-start">
+                  <h3 class="text-success ml-2 mb-0 font-weight-medium" id="people_count_rate_plus"></h3>
+                  <h3 class="text-danger ml-2 mb-0 font-weight-medium" id="people_count_rate_minus"></h3>
+                </div>
+              </div>
+            </div>
+            <h6 class="text-muted font-weight-normal">Total Error Number</h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-9">
+                <div class="d-flex align-items-center align-self-start">
+                  <h3 class="mb-0" id="error_count">-</h3>
+                </div>
+              </div>
+            </div>
+            <h6 class="text-muted font-weight-normal">Selected Error Number</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- page chart -->
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Error Records Table</h4>
+            <div class="table-responsive">
+              <table id="jds-example" class="table table-hover">
+              </table>
+              <script>click_header()</script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- script definition -->
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.js"></script>
+    <!-- AJAX setting -->
+    <script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    window.addEventListener("load", function (event) {
+        let drp = new DateRangePicker('datetimerange-input1',
+            {
+                showDropdowns: false,
+                alwaysShowCalendars: false,
+                ranges: {
+                    'Today': [moment().startOf('day'), moment().endOf('day')],
+                    'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+                    'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
+                    'This Month': [moment().startOf('month').startOf('day'), moment().endOf('month').endOf('day')],
+                },
+                locale: {
+                    format: "YYYY-MM-DD",
+                }
+            },
+            function (start, end) {
+                var form_data = new FormData();
+                form_data.append('start', start.format());
+                form_data.append('end', end.format());
+                $.ajax({
+                    type: "POST",
+                    url: $SCRIPT_ROOT + "/get_error_list",
+                    data: form_data,
+                    success: (data) => {
+                    $("#error_count").text(data.error_count);
+                    $("#error_total").text(data.error_total);
+
+                    $('#jds-example').html("")
+                    var row_data = '<thead><tr><th>Status</th><th>Event</th><th>EventTime</th><th>ID</th><th>Owner</th><th>Result</th></tr></thead><tbody>';
+
+                    for (var arr in data.error_list){
+                        var error_obj = data.error_list[arr];
+                        row_data += '<tr class="header">';
+                        row_data += '<th><label class="badge badge-danger">Failed</label></th>';
+                        for (var key in error_obj){
+                            row_data += '<th class="text-light">' + error_obj[key] + '</th>';
+                        };
+                        row_data += '</tr>'
+
+                        var id_obj = data.id_db_list[arr];
+                        for (var id_arr in id_obj){
+                            var obj = id_obj[id_arr];
+                            row_data += '<tr>';
+                            row_data += '<td><label class="badge badge-warning">Processed</label></td>';
+                            for (var id_key in obj){
+                                row_data += '<td class="text-light">' + obj[id_key] + '</td>';
+                            };
+                            row_data += '</tr>'
+                        };
+                        row_data += '</tbody>'
+                    };
+                    $('#jds-example').append(row_data);
+                    click_header();
+                    alert(data.msg)
+                    },
+                    contentType: false,
+                    processData: false,
+                    dataType: "json"
+                    });
+                alert(start.format() + " - " + end.format());
+            })
+        //drp.setStartDate('2014/03/01');
+        //drp.setEndDate('2014/03/03');
+        window.addEventListener('apply.daterangepicker', function (ev) {
+            console.log(ev.detail.startDate.format('YYYY-MM-DD'));
+            console.log(ev.detail.endDate.format('YYYY-MM-DD'));
+        });
+    });
+    </script>
+    {% endblock %}
+    <!-- plugins:js -->
+	<script src="{{url_for('static',filename='assets/vendors/js/vendor.bundle.base.js')}}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+	<script src="{{url_for('static',filename='assets/vendors/chart.js/Chart.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/progressbar.js/progressbar.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/vendors/owl-carousel-2/owl.carousel.min.js')}}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+	<script src="{{url_for('static',filename='assets/js/off-canvas.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/hoverable-collapse.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/misc.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/settings.js')}}"></script>
+	<script src="{{url_for('static',filename='assets/js/todolist.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+	<script src="{{url_for('static',filename='assets/js/dashboard.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <!-- End custom js for this page -->
+	</div>
+  </body>
+</html>

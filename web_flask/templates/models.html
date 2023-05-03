@@ -69,15 +69,15 @@
                     <div class="row">
                      <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">Page Select</h3>
+                          <h3 class="mb-0">Model Select</h3>
                         </div>
                       </div>
 						<select name="page" id="pageselect">
-							<option value="" disabled selected>Select the page</option>
-							<option value=" Owner：PrjManagerForm">Project</option>
-							<option value=" Owner：TrainerForm">Train</option>
-							<option value=" Owner：VerifierForm">Verification</option>
-							<option value=" Owner：PredictorForm">Predictor</option>
+							<option value="" disabled selected>Select the model</option>
+							<option value=" Owner：PrjManagerForm">Classification</option>
+							<option value=" Owner：TrainerForm">Segmentation</option>
+							<option value=" Owner：VerifierForm">Anomaly detection</option>
+							<option value=" Owner：PredictorForm">Object detection</option>
 						</select>
 						<p class="text-success ml-2 mb-0 font-weight-medium"><button id='chart_btn' class="button-two" type="text"><span>submit</span></button></p>
 						<script>chart_btn()</script>
@@ -167,11 +167,11 @@
               </div>
             </div>
         <!-- content-wrapper ends -->
-			
+
 		<!-- AJAX setting -->
 		<script type=text/javascript>
 			$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
-		</script>	
+		</script>
 		<script language="javascript" type="text/javascript">
 		setInterval(function(){
 			$.ajax({
@@ -187,7 +187,7 @@
 		}, 1000);
 		</script>
         {% endblock %}
-		
+
     <!-- container-scroller -->
     <!-- plugins:js -->
 	<script src="{{url_for('static',filename='assets/vendors/js/vendor.bundle.base.js')}}"></script>
@@ -198,7 +198,7 @@
 	<script src="{{url_for('static',filename='assets/vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
 	<script src="{{url_for('static',filename='assets/vendors/owl-carousel-2/owl.carousel.min.js')}}"></script>
     <!-- End plugin js for this page -->
-    <!-- inject:js -->	
+    <!-- inject:js -->
 	<script src="{{url_for('static',filename='assets/js/off-canvas.js')}}"></script>
 	<script src="{{url_for('static',filename='assets/js/hoverable-collapse.js')}}"></script>
 	<script src="{{url_for('static',filename='assets/js/misc.js')}}"></script>

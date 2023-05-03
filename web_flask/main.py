@@ -3,24 +3,12 @@ import sys
 import json
 import pandas as pd 
 import numpy as np
-import matplotlib.pyplot as plt
-from datetime import timedelta
 from flask import Flask, request, render_template, redirect, url_for, flash, Response, jsonify, session
-from werkzeug.utils import secure_filename
 
 sys.path.append("..")
 from nosql.MongoDB import Nosql
 
-UPLOAD_FOLDER = 'D:\\dataset\\Aisvion Log Tool\\User_Logs\\2022-06-07'
-ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 '''
 HTML PAGES
@@ -30,88 +18,98 @@ HTML PAGES
 def home():
     return render_template('home.html')
 
-@app.route('/')
-def index():
+@app.route('/pages')
+def pages():
     return render_template('index.html')
 
-@app.route("/monitor_indoor", methods=['GET','POST'])
-def monitor_indoor():
-    return render_template("monitor_indoor.html")
+@app.route('/models')
+def models():
+    return render_template('models.html')
 
-@app.route("/monitor_entrance", methods=['GET','POST'])
-def monitor_entrance():
-    return render_template("monitor_entrance.html")
+
+@app.route("/error", methods=['GET','POST'])
+def error():
+    return render_template("error.html")
 
 '''
 ASYNC TOOLS
 '''
-@app.route('/log_submit',methods=[ "GET",'POST'])
+@app.route('/log_submit', methods=[ "GET",'POST'])
 def log_submit():
-    msg = "Path loading success!"
+    msg = "Success loading paths!"
     folder_path = request.form.get('folder_path')
     db_size = Nosql().get_db_size()
-    try:       
-        for files in os.listdir(folder_path):
-            full_path = folder_path + "//" + files
-            df_log = pd.read_csv(full_path, header=None)
-            df_t = df_log[0].str.split('|', 2, expand=True)
-            df = df_t[2].str.split('｜', 4, expand=True)
+    upload_size = '"NO RECORDS UPDATED!"'
+    try:
+        for file in os.listdir(folder_path):
+            full_path = os.path.join(folder_path, file)
+            df_log = pd.read_csv(full_path, sep='\t', header=None).dropna()
+            df_t = df_log[0].str.split('|', n=2, expand=True)
+            df = df_t[2].str.split('｜', n=4, expand=True)
             df.columns = ['Owner', 'Name', 'Type', 'Event', 'Result']
-            df['next_page'] = np.append(df["Owner"][1:].values,"")
-            df['prev_page'] = np.append("",df["Owner"][:-1].values)
-            df['time'] = df_t[0] 
-            Nosql().insert_db(df)
-    except:                   
-        msg = "Path loading failed." 
-    return jsonify({'msg':msg, 'db_size':db_size}) 
+            df['next_page'] = np.append(df["Owner"][1:].values,'')
+            df['prev_page'] = np.append('', df["Owner"][:-1].values)
+            df['time'] = df_t[0]
+            Nosql().insert_db(df.dropna())
+            upload_size = df.shape[0]
+    except Exception as e:
+        print("An error occurred:", e)
+        msg = "Path loading was unsuccessful. Please make sure the correct files are on your path."
+
+    return jsonify({'msg':msg, 'upload_size':upload_size, 'db_size':db_size})
+
+@app.route("/get_error_list", methods=['GET','POST'])
+def get_error_list():
+    try:
+        msg = "Success loading paths!"
+        start = request.form.get('start').split("T")[0]
+        end = request.form.get('end').split("T")[0]
+        error_db = Nosql().query_error_time(start, end)[['ID', 'Owner', 'Event', 'Result', 'EventTime']]
+        error_total = Nosql().query_error().shape[0]
+        id_list = error_db['ID'].values.tolist()
+        id_db_list = []
+        for id_num in id_list:
+            id_db = Nosql().query_id(id_num)[['ID', 'Owner', 'Event', 'Result', 'EventTime']]
+            id_db_list += [json.loads(id_db.to_json(orient="records"))]
+        error_list = json.loads(error_db.to_json(orient="records"))
+        return jsonify({'msg': msg, 'error_total': error_total, 'error_count': error_db.shape[0],
+                        'column_name': error_db.columns.tolist(), 'error_list': error_list, 'id_db_list': id_db_list})
+    except Exception as e:
+        return jsonify({'msg': f"Error occurred: {e}"})
 
 @app.route("/page_count", methods=['GET','POST'])
 def page_count():
     db_size = Nosql().get_db_size()
     print(db_size)
-    return jsonify({'db_size':db_size}) 
+    return jsonify({'db_size':db_size})
 
 @app.route("/page_plot", methods=['GET','POST'])
 def page_plot():
     page = request.form.get('page')
-    print("select page: ",page)
-    query = {"$and": [{'Owner': page}, {"next_page": {'$exists': True}}, {"prev_page": {'$exists': True}}]}
-    list = Nosql().query_db(query)
-    df = pd.DataFrame(list)
-    
+    df = Nosql().query_db(page)
+
     # prev
-    name_list = df.groupby(['prev_page']).count()['_id'].index
-    num_list = df.groupby(['prev_page']).count()['_id'].values
+    name_list = df.groupby(['PrevPage']).count()['EventTime'].index
+    num_list = df.groupby(['PrevPage']).count()['EventTime'].values
     prev_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
-    page_count = sum(prev_data['value'])
+    page_num = sum(prev_data['value'])
     prev_data = prev_data.to_json(orient = "records")
-    print(page_count)
+    print(page_num)
     
     # next
-    name_list = df.groupby(['next_page']).count()['_id'].index
-    num_list = df.groupby(['next_page']).count()['_id'].values
+    name_list = df.groupby(['NextPage']).count()['EventTime'].index
+    num_list = df.groupby(['NextPage']).count()['EventTime'].values
     next_data = pd.DataFrame({'x': name_list, 'value': num_list, 'fill': "#FF0000"}, columns=['x', 'value', 'fill'])
     next_data = next_data.to_json(orient = "records")  
 
     # components
-    name_list = df.groupby(['Name']).count()['_id'].index
-    num_list = df.groupby(['Name']).count()['_id'].values
+    name_list = df.groupby(['Name']).count()['EventTime'].index
+    num_list = df.groupby(['Name']).count()['EventTime'].values
     components_data = pd.DataFrame({'x': name_list, 'value': num_list}, columns=['x', 'value'])
     components_data = components_data.to_json(orient = "records")  
     
-    return jsonify({'next_data':next_data, 'prev_data':prev_data, 'components_data':components_data, 'page_count':page_count})
-   
-@app.route('/monitor_facelist', methods=["GET",'POST'])
-def monitor_facelist():
-    df = db.get_faceid()
-    df = df.sort_values(by='date_time', ascending=False)
-    df = df.drop_duplicates(subset = "face_id")
-    df = df.head(10)
-    print("face_refresh")
-    id_list = df["face_id"].to_json(orient = "records")
-    photo_list = df["image_base64"].to_json(orient = "records")
-    return jsonify({'id_list':id_list, 'photo_list':photo_list})
+    return jsonify({'next_data':next_data, 'prev_data':prev_data, 'components_data':components_data, 'page_count':page_num})
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(32)
-    app.run(host = '127.0.0.1', port = 5000, debug = True)
+    app.run(host = '127.0.0.1', port = 1000, debug = True)
